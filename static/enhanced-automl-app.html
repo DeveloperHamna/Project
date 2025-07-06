@@ -8,10 +8,11 @@
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
         .sidebar-transition { 
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; 
+            transition: transform 0.15s ease-out, opacity 0.15s ease-out; 
         }
         .sidebar-hidden { 
             transform: translateX(-100%); 
+            opacity: 0;
         }
         .sidebar-hover-trigger {
             position: fixed;
@@ -22,32 +23,293 @@
             z-index: 60;
             background: transparent;
         }
-        .step-icon { @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold; }
-        .step-active { @apply bg-blue-500 text-white; }
-        .step-completed { @apply bg-green-500 text-white; }
-        .step-clickable { @apply bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50; }
-        .step-disabled { @apply bg-gray-300 text-gray-500; }
+        .sidebar-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.85);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .sidebar-blur {
+            background: rgba(30, 30, 30, 0.85);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Enhanced Analysis Section Styles */
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .dark .analysis-section {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+        }
+        .analysis-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08);
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+            cursor: pointer;
+        }
+        .dark .section-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .dark .section-title {
+            color: #f9fafb;
+        }
+        .section-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: #3b82f6;
+        }
+        .dark .section-icon {
+            color: #60a5fa;
+        }
+        
+        /* Collapsible Content */
+        .collapsible-content {
+            padding: 0 2rem;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .collapsible-content.expanded {
+            padding: 2rem;
+            max-height: 2000px;
+            opacity: 1;
+        }
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding: 0 2rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .dark .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 1px solid #475569;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            border-radius: 12px 12px 0 0;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        .dark .stat-label {
+            color: #94a3b8;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .step-icon { 
+            @apply w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .step-active { 
+            @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .step-completed { 
+            @apply bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+        }
+        .step-clickable { 
+            @apply bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 hover:from-blue-100 hover:to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 dark:text-blue-300 dark:hover:from-blue-900/40 dark:hover:to-indigo-900/40;
+            transition: all 0.2s ease;
+        }
+        .step-clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+        
+        .analysis-section {
+            @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 transition-all duration-300;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .analysis-section:hover {
+            @apply shadow-xl;
+            transform: translateY(-2px);
+        }
+        .section-header {
+            @apply flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700;
+        }
+        .section-title {
+            @apply text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-3;
+        }
+        .section-icon {
+            @apply w-6 h-6 text-blue-500;
+        }
+        
+        .stats-grid {
+            @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6;
+        }
+        .stat-card {
+            @apply bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800/30;
+        }
+        .stat-label {
+            @apply text-sm font-medium text-gray-600 dark:text-gray-400 mb-1;
+        }
+        .stat-value {
+            @apply text-2xl font-bold text-blue-600 dark:text-blue-400;
+        }
+        
+        .visualization-grid {
+            @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+        }
         .visualization-card { 
-            @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow;
+            @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .visualization-card:hover {
+            transform: translateY(-4px);
+        }
+        
         .toggle-button {
-            @apply inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors;
+            @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg;
         }
-        .data-table { @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700; }
-        .data-table th { @apply px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider; }
-        .data-table td { @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white; }
+        .toggle-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .data-table { 
+            @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-xl overflow-hidden;
+        }
+        .data-table th { 
+            @apply px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider;
+        }
+        .data-table td { 
+            @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800;
+        }
         
         .no-dataset-message {
             @apply flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400 text-center;
         }
         .no-dataset-icon {
-            @apply text-6xl mb-4;
+            @apply text-6xl mb-4 animate-bounce;
         }
         .no-dataset-text {
             @apply text-xl font-medium mb-2;
         }
         .no-dataset-subtitle {
-            @apply text-sm;
+            @apply text-sm opacity-75;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .collapsible-content {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            overflow: hidden;
+        }
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+        .collapsible-content.expanded {
+            max-height: 2000px;
+            opacity: 1;
         }
     </style>
 </head>
@@ -91,11 +353,11 @@
              x-show="!sidebarOpen"></div>
         
         <!-- Sidebar -->
-        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg sidebar-transition lg:relative lg:translate-x-0"
+        <div class="fixed inset-y-0 left-0 z-50 w-64 sidebar-blur shadow-2xl sidebar-transition lg:relative lg:translate-x-0"
              :class="sidebarOpen ? '' : 'sidebar-hidden'"
              x-data="{ autoHideTimer: null }"
              @mouseenter="clearTimeout(autoHideTimer); if (window.innerWidth < 1024) sidebarOpen = true"
-             @mouseleave="if (window.innerWidth < 1024) { autoHideTimer = setTimeout(() => { sidebarOpen = false; }, 1500); }">
+             @mouseleave="if (window.innerWidth < 1024) { sidebarOpen = false; }">
             
             <div class="flex flex-col h-full pt-16">
                 <!-- Navigation Steps -->
@@ -278,73 +540,160 @@
                         </div>
                     </div>
 
-                    <!-- Analysis Controls -->
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <button @click="runDataInspection" class="toggle-button" :disabled="dataInspectionLoading">
-                                <span x-show="!dataInspectionLoading">🔍 Run Data Inspection</span>
-                                <span x-show="dataInspectionLoading">Running...</span>
-                            </button>
-                            
-                            <button @click="generateAllVisualizations" class="toggle-button" :disabled="visualizationLoading">
-                                <span x-show="!visualizationLoading">📊 Generate All Charts</span>
-                                <span x-show="visualizationLoading">Generating...</span>
-                            </button>
-
-                            <div class="flex items-center space-x-2">
-                                <label class="text-sm font-medium">Target Column:</label>
-                                <select x-model="targetColumn" class="border border-gray-300 rounded-md px-3 py-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <option value="">Auto-detect</option>
-                                    <template x-for="column in datasetPreview?.columns || []" :key="column">
-                                        <option :value="column" x-text="column"></option>
-                                    </template>
-                                </select>
+                    <!-- Enhanced Data Analysis Content -->
+                    <div x-show="sessionId" class="space-y-8 fade-in">
+                        <!-- Dataset Overview Section -->
+                        <div class="analysis-section slide-in" x-data="{ expanded: true }">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Dataset Overview
+                                </div>
+                                <button @click="expanded = !expanded" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                                    <svg class="w-5 h-5 transform transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Data Inspection Results -->
-                    <div x-show="dataInspection" class="mb-6">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                            <h3 class="text-xl font-semibold mb-4">Data Quality Assessment</h3>
                             
-                            <!-- Quality Score -->
-                            <div class="mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium">Data Quality Score</span>
-                                    <span class="text-lg font-bold" x-text="Math.round(dataInspection?.data_quality?.score || 0) + '%'"></span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-3">
-                                    <div class="h-3 rounded-full transition-all duration-300" 
-                                         :class="(dataInspection?.data_quality?.score || 0) > 80 ? 'bg-green-500' : 
-                                                (dataInspection?.data_quality?.score || 0) > 60 ? 'bg-yellow-500' : 'bg-red-500'"
-                                         :style="'width: ' + (dataInspection?.data_quality?.score || 0) + '%'"></div>
-                                </div>
-                            </div>
-
-                            <!-- Issues and Recommendations -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">Issues Found</h4>
-                                    <ul class="space-y-1">
-                                        <template x-for="issue in dataInspection?.data_quality?.issues || []" :key="issue">
-                                            <li class="text-sm text-gray-600 dark:text-gray-400" x-text="'• ' + issue"></li>
-                                        </template>
-                                        <li x-show="(dataInspection?.data_quality?.issues || []).length === 0" class="text-sm text-green-600 dark:text-green-400">No major issues found</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-blue-600 dark:text-blue-400 mb-2">Recommendations</h4>
-                                    <ul class="space-y-1">
-                                        <template x-for="rec in dataInspection?.data_quality?.recommendations || []" :key="rec">
-                                            <li class="text-sm text-gray-600 dark:text-gray-400" x-text="'• ' + rec"></li>
-                                        </template>
-                                        <li x-show="(dataInspection?.data_quality?.recommendations || []).length === 0" class="text-sm text-gray-600 dark:text-gray-400">Dataset looks good to proceed</li>
-                                    </ul>
+                            <div class="collapsible-content" :class="expanded ? 'expanded' : 'collapsed'">
+                                <!-- Quick Stats Grid -->
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-label">Total Rows</div>
+                                        <div class="stat-value" x-text="datasetPreview?.shape?.[0] || '-'"></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Total Columns</div>
+                                        <div class="stat-value" x-text="datasetPreview?.shape?.[1] || '-'"></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Memory Usage</div>
+                                        <div class="stat-value" x-text="datasetPreview?.memory_usage ? formatBytes(datasetPreview.memory_usage) : '-'"></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Numerical Columns</div>
+                                        <div class="stat-value" x-text="datasetPreview?.numerical_columns?.length || 0"></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Categorical Columns</div>
+                                        <div class="stat-value" x-text="datasetPreview?.categorical_columns?.length || 0"></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Missing Values</div>
+                                        <div class="stat-value" x-text="datasetPreview?.missing_values ? Object.values(datasetPreview.missing_values).reduce((a, b) => a + b, 0) : 0"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- Analysis Controls Section -->
+                        <div class="analysis-section slide-in">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                                    </svg>
+                                    Analysis Controls
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <button @click="runDataInspection" class="toggle-button" :disabled="dataInspectionLoading">
+                                    <span x-show="!dataInspectionLoading">🔍 Run Data Inspection</span>
+                                    <span x-show="dataInspectionLoading">⏳ Analyzing...</span>
+                                </button>
+                                
+                                <button @click="generateAllVisualizations" class="toggle-button" :disabled="visualizationLoading">
+                                    <span x-show="!visualizationLoading">📊 Generate Charts</span>
+                                    <span x-show="visualizationLoading">🎨 Creating...</span>
+                                </button>
+
+                                <div class="flex items-center space-x-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl px-4 py-2">
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Target Column:</label>
+                                    <select x-model="targetColumn" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Auto-detect</option>
+                                        <template x-for="column in datasetPreview?.columns || []" :key="column">
+                                            <option :value="column" x-text="column"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Inspection Results Section -->
+                        <div x-show="dataInspection" class="analysis-section slide-in" x-data="{ expanded: false }">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Data Quality Assessment
+                                </div>
+                                <button @click="expanded = !expanded" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                                    <svg class="w-5 h-5 transform transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="collapsible-content" :class="expanded ? 'expanded' : 'collapsed'">
+                                <!-- Quality Score with Enhanced Design -->
+                                <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl p-6 mb-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-lg font-semibold text-gray-800 dark:text-gray-200">Data Quality Score</span>
+                                        <span class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" 
+                                              x-text="Math.round(dataInspection?.data_quality?.score || 0) + '%'"></span>
+                                    </div>
+                                    <div class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                                        <div class="h-4 rounded-full transition-all duration-500 bg-gradient-to-r" 
+                                             :class="(dataInspection?.data_quality?.score || 0) > 80 ? 'from-green-500 to-emerald-600' : 
+                                                    (dataInspection?.data_quality?.score || 0) > 60 ? 'from-yellow-500 to-orange-500' : 'from-red-500 to-red-600'"
+                                             :style="'width: ' + (dataInspection?.data_quality?.score || 0) + '%'"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Issues and Recommendations Grid -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800/30">
+                                        <h4 class="font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
+                                            <span class="text-xl">⚠️</span> Issues Found
+                                        </h4>
+                                        <ul class="space-y-2">
+                                            <template x-for="issue in dataInspection?.data_quality?.issues || []" :key="issue">
+                                                <li class="text-sm text-red-600 dark:text-red-400 flex items-start gap-2">
+                                                    <span class="text-red-500 mt-1">•</span>
+                                                    <span x-text="issue"></span>
+                                                </li>
+                                            </template>
+                                            <li x-show="(dataInspection?.data_quality?.issues || []).length === 0" 
+                                                class="text-sm text-green-600 dark:text-green-400 flex items-center gap-2">
+                                                <span class="text-xl">✅</span> No major issues found
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800/30">
+                                        <h4 class="font-semibold text-blue-700 dark:text-blue-400 mb-4 flex items-center gap-2">
+                                            <span class="text-xl">💡</span> Recommendations
+                                        </h4>
+                                        <ul class="space-y-2">
+                                            <template x-for="rec in dataInspection?.data_quality?.recommendations || []" :key="rec">
+                                                <li class="text-sm text-blue-600 dark:text-blue-400 flex items-start gap-2">
+                                                    <span class="text-blue-500 mt-1">•</span>
+                                                    <span x-text="rec"></span>
+                                                </li>
+                                            </template>
+                                            <li x-show="(dataInspection?.data_quality?.recommendations || []).length === 0" 
+                                                class="text-sm text-green-600 dark:text-green-400 flex items-center gap-2">
+                                                <span class="text-xl">🎉</span> Dataset ready to proceed
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     <!-- Visualization Toggles -->
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
