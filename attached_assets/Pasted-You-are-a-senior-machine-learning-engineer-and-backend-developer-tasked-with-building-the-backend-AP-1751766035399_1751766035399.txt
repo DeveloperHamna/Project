@@ -1,0 +1,124 @@
+You are a senior machine learning engineer and backend developer tasked with building the backend API and ML engine for a general-purpose AutoML web application.
+
+The backend must:
+
+Accept any tabular dataset uploaded by the user (CSV, Excel, etc.).
+
+Automatically determine whether it’s a regression or classification problem.
+
+Preprocess the data appropriately.
+
+Train multiple models and select the best one.
+
+Return evaluation metrics, visualizations, and model insights to the frontend via clean, well-documented REST APIs.
+
+Be production-ready, modular, and scalable.
+
+🎯 Objective:
+Build a robust FastAPI-based backend service that exposes endpoints for:
+✅ File upload & dataset preview
+✅ Task type detection (classification or regression)
+✅ Automatic data cleaning & feature engineering
+✅ Model training & hyperparameter tuning
+✅ Model evaluation & comparison
+✅ Serving metrics, charts, and feature importance to the frontend
+✅ Downloadable report generation
+
+🔑 Requirements:
+📂 Data Ingestion:
+Accept tabular datasets in CSV or Excel format.
+
+Validate file type & return helpful error messages.
+
+Parse uploaded file into pandas DataFrame.
+
+Preview a sample of the dataset to the frontend.
+
+🧠 Task Detection:
+Analyze the dataset and infer:
+
+Target column (default: last column; allow override via API).
+
+Task type: classification (categorical target) or regression (numeric target).
+
+🧹 Data Preprocessing:
+Handle missing values intelligently.
+
+Encode categorical features.
+
+Scale/normalize numerical features.
+
+Engineer basic statistical features where appropriate.
+
+Log all preprocessing steps & return them in API response.
+
+🧪 Model Training:
+If classification: train Logistic Regression, Decision Tree, Random Forest, XGBoost.
+
+If regression: train Linear Regression, Decision Tree Regressor, Random Forest Regressor, XGBoost Regressor.
+
+Perform hyperparameter tuning with GridSearchCV or RandomizedSearchCV.
+
+Save the trained models (Joblib/Pickle).
+
+Return training logs and progress.
+
+📊 Evaluation & Insights:
+Compute appropriate metrics:
+
+Classification: Precision, Recall, F1, ROC-AUC
+
+Regression: RMSE, MAE, R²
+
+Generate visualizations (ROC curves, confusion matrix, feature importance plots) and make them available as image URLs.
+
+Identify & report top features (feature importance or SHAP).
+
+📄 Reports:
+Generate downloadable PDF/CSV report summarizing:
+
+Dataset info
+
+Preprocessing steps
+
+Best model & metrics
+
+Visualizations
+
+🛠️ Tech Stack:
+Backend Framework: FastAPI
+
+ML/DS Libraries: pandas, numpy, scikit-learn, xgboost, shap, matplotlib/seaborn/plotly
+
+Model Persistence: Joblib or Pickle
+
+Task Queue (optional): Celery with Redis if long-running jobs
+
+Packaging: Docker-ready
+
+📄 Output Expected from You:
+✅ Folder/project structure suggestion
+✅ REST API endpoint design & documentation
+✅ Code snippets for each main module:
+
+File upload & preview
+
+Task detection
+
+Preprocessing pipeline
+
+Model training & evaluation
+
+Visualization generation & serving
+✅ Guidance on scalability & deployment
+✅ JSON response examples for APIs
+
+📜 Tone & Style:
+Use structured sections with clear headings.
+
+Provide code samples & explanations where helpful.
+
+Keep it pragmatic & implementable.
+
+🚀 Begin by outlining the project folder structure and high-level API endpoints.
+
