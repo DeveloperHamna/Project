@@ -7,11 +7,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
-        .sidebar-transition { transition: transform 0.3s ease-in-out; }
-        .sidebar-hidden { transform: translateX(-100%); }
+        .sidebar-transition { 
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; 
+        }
+        .sidebar-hidden { 
+            transform: translateX(-100%); 
+        }
+        .sidebar-hover-trigger {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 100vh;
+            z-index: 60;
+            background: transparent;
+        }
         .step-icon { @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold; }
         .step-active { @apply bg-blue-500 text-white; }
         .step-completed { @apply bg-green-500 text-white; }
+        .step-clickable { @apply bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50; }
         .step-disabled { @apply bg-gray-300 text-gray-500; }
         .visualization-card { 
             @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow;
@@ -22,6 +36,19 @@
         .data-table { @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700; }
         .data-table th { @apply px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider; }
         .data-table td { @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white; }
+        
+        .no-dataset-message {
+            @apply flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400 text-center;
+        }
+        .no-dataset-icon {
+            @apply text-6xl mb-4;
+        }
+        .no-dataset-text {
+            @apply text-xl font-medium mb-2;
+        }
+        .no-dataset-subtitle {
+            @apply text-sm;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white" x-data="automlApp()">
@@ -58,9 +85,17 @@
     </header>
 
     <div class="flex h-screen pt-16">
+        <!-- Hover trigger for sidebar -->
+        <div class="sidebar-hover-trigger lg:hidden" 
+             @mouseenter="sidebarOpen = true"
+             x-show="!sidebarOpen"></div>
+        
         <!-- Sidebar -->
         <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg sidebar-transition lg:relative lg:translate-x-0"
-             :class="sidebarOpen ? '' : 'sidebar-hidden lg:sidebar-hidden'">
+             :class="sidebarOpen ? '' : 'sidebar-hidden'"
+             x-data="{ autoHideTimer: null }"
+             @mouseenter="clearTimeout(autoHideTimer); if (window.innerWidth < 1024) sidebarOpen = true"
+             @mouseleave="if (window.innerWidth < 1024) { autoHideTimer = setTimeout(() => { sidebarOpen = false; }, 1500); }">
             
             <div class="flex flex-col h-full pt-16">
                 <!-- Navigation Steps -->
@@ -81,8 +116,7 @@
 
                             <!-- Step 2: Data Analysis -->
                             <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(2)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 2}"
-                                 :disabled="!sessionId">
+                                 @click="setCurrentStep(2)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 2}">
                                 <div class="step-icon" :class="getStepClass(2)">
                                     <span>2</span>
                                 </div>
@@ -94,8 +128,7 @@
 
                             <!-- Step 3: Model Training -->
                             <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(3)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 3}"
-                                 :disabled="!dataAnalysisCompleted">
+                                 @click="setCurrentStep(3)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 3}">
                                 <div class="step-icon" :class="getStepClass(3)">
                                     <span>3</span>
                                 </div>
@@ -107,8 +140,7 @@
 
                             <!-- Step 4: Results & Reports -->
                             <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(4)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 4}"
-                                 :disabled="!modelTrainingCompleted">
+                                 @click="setCurrentStep(4)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 4}">
                                 <div class="step-icon" :class="getStepClass(4)">
                                     <span>4</span>
                                 </div>
@@ -235,6 +267,15 @@
                     <div class="mb-8">
                         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Data Analysis & Exploration</h2>
                         <p class="text-gray-600 dark:text-gray-400">Explore your data with comprehensive analysis and interactive visualizations</p>
+                    </div>
+
+                    <!-- No Dataset Placeholder -->
+                    <div x-show="!sessionId" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+                        <div class="no-dataset-message">
+                            <div class="no-dataset-icon">👻</div>
+                            <div class="no-dataset-text">No dataset found</div>
+                            <div class="no-dataset-subtitle">Please upload a dataset to proceed with data analysis</div>
+                        </div>
                     </div>
 
                     <!-- Analysis Controls -->
@@ -380,7 +421,17 @@
                         <p class="text-gray-600 dark:text-gray-400">Train and compare multiple machine learning models automatically</p>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <!-- No Dataset Placeholder -->
+                    <div x-show="!sessionId" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+                        <div class="no-dataset-message">
+                            <div class="no-dataset-icon">👻</div>
+                            <div class="no-dataset-text">No dataset found</div>
+                            <div class="no-dataset-subtitle">Please upload a dataset to proceed with model training</div>
+                        </div>
+                    </div>
+
+                    <!-- Model Training Interface -->
+                    <div x-show="sessionId" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <p class="text-center text-gray-500 dark:text-gray-400">Model training interface will be implemented here</p>
                     </div>
                 </div>
@@ -392,7 +443,17 @@
                         <p class="text-gray-600 dark:text-gray-400">View model performance metrics and download comprehensive reports</p>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <!-- No Dataset Placeholder -->
+                    <div x-show="!sessionId" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+                        <div class="no-dataset-message">
+                            <div class="no-dataset-icon">👻</div>
+                            <div class="no-dataset-text">No dataset found</div>
+                            <div class="no-dataset-subtitle">Please upload a dataset to proceed with results and reports</div>
+                        </div>
+                    </div>
+
+                    <!-- Results & Reports Interface -->
+                    <div x-show="sessionId" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <p class="text-center text-gray-500 dark:text-gray-400">Results and reports interface will be implemented here</p>
                     </div>
                 </div>
@@ -497,17 +558,23 @@
                 },
 
                 getStepClass(step) {
-                    if (step <= this.completedSteps) return 'step-completed';
-                    if (step === this.currentStep) return 'step-active';
-                    return 'step-disabled';
+                    if (step === this.currentStep) {
+                        return 'step-active';
+                    } else if (step === 1 && this.sessionId) {
+                        return 'step-completed';
+                    } else if (step === 2 && this.sessionId && this.dataAnalysisCompleted) {
+                        return 'step-completed';
+                    } else if (step === 3 && this.sessionId && this.modelTrainingCompleted) {
+                        return 'step-completed';
+                    } else {
+                        return 'step-clickable';
+                    }
                 },
 
                 setCurrentStep(step) {
-                    // Only allow navigation to completed steps or next step
-                    if (step <= this.completedSteps + 1) {
-                        this.currentStep = step;
-                        this.sidebarOpen = false; // Close sidebar on mobile
-                    }
+                    // Allow navigation to all steps
+                    this.currentStep = step;
+                    this.sidebarOpen = false; // Close sidebar on mobile after navigation
                 },
 
                 handleFileUpload(event) {

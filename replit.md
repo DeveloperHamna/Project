@@ -156,13 +156,14 @@ This is a production-ready FastAPI-based AutoML backend service that provides co
 - Data validation and schema consistency checks
 
 #### Enhanced User Interface
-- Modern sidebar navigation with clickable step progression
+- Modern sidebar navigation with auto-hide behavior and cursor-based interactions
+- All navigation buttons always clickable with friendly "👻 No dataset found" placeholders
 - Dark/light theme support with system preference detection
 - Real-time progress tracking and status indicators
 - Interactive visualization controls with toggle buttons
-- Responsive design for mobile, tablet, and desktop
+- Responsive design with hover triggers for mobile navigation
 - Professional UI suitable for business presentations
-- Session management with unique identifiers
+- Session management with unique identifiers and section awareness
 
 #### API Enhancements
 - New comprehensive data analysis endpoints (/api/v1/data-analysis/*)
