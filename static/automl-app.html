@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoML Studio - Automated Machine Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(135deg, #93c5fd 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .drop-zone {
+            transition: all 0.3s ease;
+        }
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stepper-line {
+            background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--progress, 0%), #e5e7eb var(--progress, 0%), #e5e7eb 100%);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white gradient-text">
+                            AutoML Studio
+                        </h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Automated Machine Learning Platform
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Health Status -->
+                    <div class="flex items-center space-x-2" id="health-status">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
+                            Backend Online
+                        </span>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i id="theme-icon" class="fas fa-moon text-gray-600 dark:text-yellow-500"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Welcome to <span class="gradient-text">AutoML Studio</span>
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Upload your dataset and let our AI automatically build, train, and evaluate 
+                machine learning models for you. No coding required.
+            </p>
+        </div>
+
+        <!-- Progress Stepper -->
+        <div class="mb-8" id="progress-stepper">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="stepper-circle active" data-step="1">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="stepper-line h-1 w-24 mx-4" style="--progress: 0%"></div>
+                </div>
+                <div class="flex items-center">
+                    <div class="stepper-circle" data-step="2">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="stepper-line h-1 w-24 mx-4" style="--progress: 0%"></div>
+                </div>
+                <div class="flex items-center">
+                    <div class="stepper-circle" data-step="3">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="stepper-line h-1 w-24 mx-4" style="--progress: 0%"></div>
+                </div>
+                <div class="stepper-circle" data-step="4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+            <div class="flex justify-between mt-4 text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Upload Dataset</span>
+                <span class="text-gray-600 dark:text-gray-400">Data Analysis</span>
+                <span class="text-gray-600 dark:text-gray-400">Model Training</span>
+                <span class="text-gray-600 dark:text-gray-400">Results</span>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Main Action -->
+            <div class="lg:col-span-2">
+                <!-- Step 1: Upload -->
+                <div id="step-upload" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                        Step 1: Upload Your Dataset
+                    </h2>
+                    
+                    <!-- Target Column Input -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Target Column (Optional)
+                        </label>
+                        <input type="text" id="target-column" placeholder="Enter target column name" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Leave empty to auto-detect the target column
+                        </p>
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div id="upload-zone" class="drop-zone border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer transition-all duration-300 hover:border-gray-400 dark:hover:border-gray-500">
+                        <div id="upload-content">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                                Upload your dataset
+                            </p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Drag and drop your CSV or Excel file, or click to browse
+                            </p>
+                            <div class="flex items-center justify-center space-x-6 text-xs text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-file-csv"></i>
+                                    <span>CSV</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-file-excel"></i>
+                                    <span>Excel</span>
+                                </div>
+                                <div class="text-gray-300 dark:text-gray-600">•</div>
+                                <span>Max 100MB</span>
+                            </div>
+                        </div>
+                        <input type="file" id="file-input" class="hidden" accept=".csv,.xlsx,.xls">
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div id="upload-progress" class="hidden mt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Uploading...</span>
+                            <span id="upload-percent" class="text-sm font-medium text-gray-900 dark:text-gray-100">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="upload-bar" class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- File Requirements -->
+                    <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                            File Requirements:
+                        </h4>
+                        <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                            <li>• Supported formats: CSV, Excel (.xlsx, .xls)</li>
+                            <li>• Maximum file size: 100MB</li>
+                            <li>• First row should contain column headers</li>
+                            <li>• Data should be in tabular format</li>
+                            <li>• Missing values are automatically handled</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 2: Data Preview (Hidden initially) -->
+                <div id="step-preview" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                            Step 2: Data Analysis
+                        </h2>
+                        <button id="start-training-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors hidden">
+                            Start Training →
+                        </button>
+                    </div>
+                    
+                    <div id="dataset-info" class="mb-6">
+                        <!-- Dataset info will be populated here -->
+                    </div>
+                    
+                    <div id="data-preview-table" class="overflow-x-auto">
+                        <!-- Data preview table will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Training Progress (Hidden initially) -->
+                <div id="step-training" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hidden">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                        Step 3: Model Training
+                    </h2>
+                    
+                    <div id="training-progress">
+                        <!-- Training progress will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Step 4: Results (Hidden initially) -->
+                <div id="step-results" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 hidden">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                        Step 4: Results & Evaluation
+                    </h2>
+                    
+                    <div id="model-results">
+                        <!-- Model results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Sidebar -->
+            <div class="space-y-6">
+                <!-- Session Info -->
+                <div id="session-info" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        Session Info
+                    </h3>
+                    <div id="session-details" class="space-y-2 text-sm">
+                        <!-- Session details will be populated here -->
+                    </div>
+                    <button onclick="resetSession()" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-lg w-full mt-4 text-sm transition-colors">
+                        Start New Session
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div id="quick-actions" class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        Quick Actions
+                    </h3>
+                    <div class="space-y-2">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors">
+                            Download Best Model
+                        </button>
+                        <button onclick="generateReport('pdf')" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors">
+                            Generate PDF Report
+                        </button>
+                        <button class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors">
+                            Export Predictions
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        💡 Tips
+                    </h3>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p>• Use clean, well-structured data for best results</p>
+                        <p>• Ensure your target column is clearly defined</p>
+                        <p>• Larger datasets generally produce better models</p>
+                        <p>• Check for data quality issues before training</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- Toasts will be added here dynamically -->
+    </div>
+
+    <script>
+        // Global state
+        let currentSessionId = null;
+        let currentStep = 1;
+        let trainingJobId = null;
+        let trainingPollInterval = null;
+
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fas fa-moon text-gray-600';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fas fa-sun text-yellow-500';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const icon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+                icon.className = 'fas fa-sun text-yellow-500';
+            } else {
+                document.documentElement.classList.remove('dark');
+                icon.className = 'fas fa-moon text-gray-600';
+            }
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+
+            const icon = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            }[type] || 'fas fa-info-circle';
+
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 transform transition-all duration-300 translate-x-full opacity-0`;
+            toast.innerHTML = `
+                <i class="${icon}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            }, 100);
+
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Update stepper
+        function updateStepper(step) {
+            currentStep = step;
+            const circles = document.querySelectorAll('.stepper-circle');
+            const lines = document.querySelectorAll('.stepper-line');
+            
+            circles.forEach((circle, index) => {
+                const stepNum = index + 1;
+                circle.className = 'stepper-circle';
+                
+                if (stepNum < step) {
+                    circle.classList.add('completed');
+                } else if (stepNum === step) {
+                    circle.classList.add('active');
+                } else {
+                    circle.classList.add('inactive');
+                }
+            });
+
+            lines.forEach((line, index) => {
+                const progress = Math.min(100, Math.max(0, (step - index - 1) * 100));
+                line.style.setProperty('--progress', `${progress}%`);
+            });
+        }
+
+        // File upload handling
+        function setupFileUpload() {
+            const uploadZone = document.getElementById('upload-zone');
+            const fileInput = document.getElementById('file-input');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+            
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+            
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        // Handle file upload
+        async function handleFileUpload(file) {
+            if (!validateFile(file)) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const targetColumn = document.getElementById('target-column').value.trim();
+            if (targetColumn) {
+                formData.append('target_column', targetColumn);
+            }
+
+            showUploadProgress();
+
+            try {
+                const response = await fetch('/api/v1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Upload failed: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                currentSessionId = result.session_id;
+                
+                hideUploadProgress();
+                showUploadSuccess();
+                await showDataPreview(result);
+                updateStepper(2);
+                showSessionInfo(result);
+                
+                showToast('Dataset uploaded successfully!', 'success');
+                
+            } catch (error) {
+                hideUploadProgress();
+                showToast(`Upload failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Validate file
+        function validateFile(file) {
+            const allowedTypes = [
+                'text/csv',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel'
+            ];
+            
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Please upload a CSV or Excel file', 'error');
+                return false;
+            }
+            
+            if (file.size > 100 * 1024 * 1024) { // 100MB
+                showToast('File size must be less than 100MB', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Show upload progress
+        function showUploadProgress() {
+            document.getElementById('upload-progress').classList.remove('hidden');
+            document.getElementById('upload-zone').style.opacity = '0.5';
+        }
+
+        // Hide upload progress
+        function hideUploadProgress() {
+            document.getElementById('upload-progress').classList.add('hidden');
+            document.getElementById('upload-zone').style.opacity = '1';
+        }
+
+        // Show upload success
+        function showUploadSuccess() {
+            const content = document.getElementById('upload-content');
+            content.innerHTML = `
+                <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                <p class="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">
+                    Upload successful!
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Your dataset has been processed and is ready for analysis
+                </p>
+            `;
+        }
+
+        // Show data preview
+        async function showDataPreview(datasetInfo) {
+            try {
+                // Detect task type
+                const taskResponse = await fetch(`/api/v1/dataset/${currentSessionId}/detect-task`, {
+                    method: 'POST'
+                });
+                
+                if (!taskResponse.ok) {
+                    throw new Error('Task detection failed');
+                }
+                
+                const taskInfo = await taskResponse.json();
+                
+                // Show dataset info
+                const infoDiv = document.getElementById('dataset-info');
+                infoDiv.innerHTML = `
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Dataset:</span>
+                                <p class="font-medium text-gray-900 dark:text-gray-100">${datasetInfo.filename}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Size:</span>
+                                <p class="font-medium text-gray-900 dark:text-gray-100">${datasetInfo.shape[0]} rows × ${datasetInfo.shape[1]} columns</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Task Type:</span>
+                                <p class="font-medium ${taskInfo.task_type === 'classification' ? 'text-blue-600 dark:text-blue-400' : 'text-purple-600 dark:text-purple-400'}">${taskInfo.task_type.charAt(0).toUpperCase() + taskInfo.task_type.slice(1)}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Target Column:</span>
+                            <span class="ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-sm font-medium">${datasetInfo.target_column}</span>
+                        </div>
+                    </div>
+                `;
+
+                // Show data preview table
+                const tableDiv = document.getElementById('data-preview-table');
+                const sampleData = datasetInfo.sample_data.slice(0, 5); // Show first 5 rows
+                
+                let tableHTML = `
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                `;
+                
+                datasetInfo.columns.forEach(col => {
+                    const isTarget = col === datasetInfo.target_column;
+                    tableHTML += `
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            ${col}
+                            ${isTarget ? '<span class="ml-1 px-1 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">Target</span>' : ''}
+                        </th>
+                    `;
+                });
+                
+                tableHTML += `
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                `;
+                
+                sampleData.forEach(row => {
+                    tableHTML += '<tr>';
+                    datasetInfo.columns.forEach(col => {
+                        const value = row[col];
+                        const isTarget = col === datasetInfo.target_column;
+                        tableHTML += `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 ${isTarget ? 'bg-green-50 dark:bg-green-900/20 font-medium' : ''}">
+                                ${value !== null && value !== undefined ? value : '<span class="text-gray-400 italic">null</span>'}
+                            </td>
+                        `;
+                    });
+                    tableHTML += '</tr>';
+                });
+                
+                tableHTML += `
+                        </tbody>
+                    </table>
+                    <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                        Showing first 5 rows of ${datasetInfo.shape[0]} total rows
+                    </div>
+                `;
+                
+                tableDiv.innerHTML = tableHTML;
+                
+                // Show the preview section
+                document.getElementById('step-preview').classList.remove('hidden');
+                document.getElementById('start-training-btn').classList.remove('hidden');
+                
+            } catch (error) {
+                showToast(`Data preview failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Show session info
+        function showSessionInfo(datasetInfo) {
+            const sessionDetails = document.getElementById('session-details');
+            sessionDetails.innerHTML = `
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Session ID:</span>
+                    <span class="font-mono text-xs">${currentSessionId.substring(0, 8)}...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Dataset:</span>
+                    <span class="truncate ml-2">${datasetInfo.filename}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Rows:</span>
+                    <span>${datasetInfo.shape[0].toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Columns:</span>
+                    <span>${datasetInfo.shape[1]}</span>
+                </div>
+            `;
+            
+            document.getElementById('session-info').classList.remove('hidden');
+        }
+
+        // Start training
+        async function startTraining() {
+            if (!currentSessionId) return;
+            
+            try {
+                const response = await fetch(`/api/v1/train/${currentSessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        test_size: 0.2,
+                        cv_folds: 5,
+                        random_state: 42
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Training failed to start');
+                }
+                
+                const result = await response.json();
+                trainingJobId = result.job_id;
+                
+                updateStepper(3);
+                showTrainingProgress();
+                startTrainingPolling();
+                
+                showToast('Training started!', 'success');
+                
+            } catch (error) {
+                showToast(`Training failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Show training progress
+        function showTrainingProgress() {
+            const progressDiv = document.getElementById('training-progress');
+            progressDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="spinner"></div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                                Training in Progress...
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Training multiple models and optimizing hyperparameters
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Overall Progress</span>
+                        <span id="training-percent" class="font-medium text-gray-900 dark:text-gray-100">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                        <div id="training-bar" class="progress-bar bg-blue-500 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+                        Training Models
+                    </h4>
+                    <div id="models-list" class="space-y-2">
+                        <!-- Model progress will be populated here -->
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('step-training').classList.remove('hidden');
+        }
+
+        // Start training polling
+        function startTrainingPolling() {
+            trainingPollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/v1/training/${trainingJobId}/status`);
+                    if (!response.ok) return;
+                    
+                    const status = await response.json();
+                    updateTrainingProgress(status);
+                    
+                    if (status.status === 'completed') {
+                        clearInterval(trainingPollInterval);
+                        await showResults();
+                        updateStepper(4);
+                        document.getElementById('quick-actions').classList.remove('hidden');
+                        showToast('Training completed successfully!', 'success');
+                    } else if (status.status === 'failed') {
+                        clearInterval(trainingPollInterval);
+                        showToast('Training failed', 'error');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error polling training status:', error);
+                }
+            }, 2000);
+        }
+
+        // Update training progress
+        function updateTrainingProgress(status) {
+            const percent = document.getElementById('training-percent');
+            const bar = document.getElementById('training-bar');
+            
+            if (percent && bar) {
+                percent.textContent = `${status.progress}%`;
+                bar.style.width = `${status.progress}%`;
+            }
+        }
+
+        // Show results
+        async function showResults() {
+            try {
+                const response = await fetch(`/api/v1/evaluation/${currentSessionId}`);
+                if (!response.ok) throw new Error('Failed to fetch results');
+                
+                const results = await response.json();
+                
+                const resultsDiv = document.getElementById('model-results');
+                resultsDiv.innerHTML = `
+                    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-trophy text-2xl text-yellow-500"></i>
+                            <div>
+                                <h4 class="text-lg font-semibold text-green-800 dark:text-green-300">
+                                    Best Model: ${results.best_model}
+                                </h4>
+                                <p class="text-sm text-green-600 dark:text-green-400">
+                                    Training completed successfully with excellent performance
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-2">Model Performance</h5>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Best Model:</span>
+                                    <span class="font-medium">${results.best_model}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Task Type:</span>
+                                    <span class="font-medium capitalize">${results.task_type}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Training Date:</span>
+                                    <span class="font-medium">${new Date(results.training_timestamp).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-2">Quick Actions</h5>
+                            <div class="space-y-2">
+                                <button onclick="generateReport('pdf')" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded w-full transition-colors">
+                                    <i class="fas fa-file-pdf mr-2"></i>Generate PDF Report
+                                </button>
+                                <button class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 text-sm py-2 px-3 rounded w-full transition-colors">
+                                    <i class="fas fa-download mr-2"></i>Download Model
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('step-results').classList.remove('hidden');
+                
+            } catch (error) {
+                showToast(`Failed to load results: ${error.message}`, 'error');
+            }
+        }
+
+        // Generate report
+        async function generateReport(format = 'pdf') {
+            if (!currentSessionId) return;
+            
+            try {
+                const response = await fetch(`/api/v1/reports/${currentSessionId}/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        format: format,
+                        include_visualizations: true,
+                        include_raw_data: false
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Report generation failed');
+                
+                const result = await response.json();
+                showToast(`${format.toUpperCase()} report generated successfully!`, 'success');
+                
+            } catch (error) {
+                showToast(`Report generation failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Reset session
+        function resetSession() {
+            currentSessionId = null;
+            trainingJobId = null;
+            currentStep = 1;
+            
+            if (trainingPollInterval) {
+                clearInterval(trainingPollInterval);
+                trainingPollInterval = null;
+            }
+            
+            // Hide all steps except upload
+            document.getElementById('step-preview').classList.add('hidden');
+            document.getElementById('step-training').classList.add('hidden');
+            document.getElementById('step-results').classList.add('hidden');
+            document.getElementById('session-info').classList.add('hidden');
+            document.getElementById('quick-actions').classList.add('hidden');
+            
+            // Reset upload zone
+            document.getElementById('upload-content').innerHTML = `
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                <p class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    Upload your dataset
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Drag and drop your CSV or Excel file, or click to browse
+                </p>
+                <div class="flex items-center justify-center space-x-6 text-xs text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center space-x-1">
+                        <i class="fas fa-file-csv"></i>
+                        <span>CSV</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Excel</span>
+                    </div>
+                    <div class="text-gray-300 dark:text-gray-600">•</div>
+                    <span>Max 100MB</span>
+                </div>
+            `;
+            
+            // Reset file input
+            document.getElementById('file-input').value = '';
+            document.getElementById('target-column').value = '';
+            
+            // Reset stepper
+            updateStepper(1);
+            
+            showToast('Session reset. You can start with a new dataset.', 'success');
+        }
+
+        // Check health status
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const health = await response.json();
+                console.log('Service health:', health);
+            } catch (error) {
+                console.error('Health check failed:', error);
+                const statusEl = document.getElementById('health-status');
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-red-600 dark:text-red-400 hidden sm:block">
+                            Backend Offline
+                        </span>
+                    `;
+                }
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            setupFileUpload();
+            checkHealth();
+            
+            // Set up event listeners
+            document.getElementById('start-training-btn').addEventListener('click', startTraining);
+            
+            // Check health every 30 seconds
+            setInterval(checkHealth, 30000);
+        });
+    </script>
+</body>
+</html>

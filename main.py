@@ -63,7 +63,12 @@ app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 
 @app.get("/")
 async def root():
-    """Root endpoint serving the frontend"""
+    """Root endpoint serving the modern AutoML frontend"""
+    return FileResponse("static/automl-app.html")
+
+@app.get("/docs-old")
+async def docs_old():
+    """Old documentation interface"""
     return FileResponse("static/index.html")
 
 

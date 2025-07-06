@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3B82F6" />
+  <meta name="description" content="AutoML Studio - Automated Machine Learning Platform. Build, train, and evaluate ML models without coding." />
+  <meta name="keywords" content="AutoML, Machine Learning, AI, No-Code ML, Data Science" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+  <meta property="og:title" content="AutoML Studio" />
+  <meta property="og:description" content="Automated Machine Learning Platform. Build, train, and evaluate ML models without coding." />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="/" />
+  <meta property="twitter:title" content="AutoML Studio" />
+  <meta property="twitter:description" content="Automated Machine Learning Platform. Build, train, and evaluate ML models without coding." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  
+  <title>AutoML Studio - Automated Machine Learning</title>
+  
+  <style>
+    /* Critical CSS for dark theme and loading state */
+    :root {
+      --toast-bg: #ffffff;
+      --toast-color: #000000;
+    }
+    
+    .dark {
+      --toast-bg: #1f2937;
+      --toast-color: #ffffff;
+    }
+    
+    /* Loading animation */
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f4f6;
+      border-radius: 50%;
+      border-top-color: #3b82f6;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Initial loading screen */
+    #initial-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    
+    #initial-loading .logo {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    #initial-loading .title {
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    #initial-loading .subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      margin-bottom: 32px;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Hide loading screen when React app loads */
+    .app-loaded #initial-loading {
+      display: none;
+    }
+  </style>
+</head>
+<body class="dark:bg-gray-900">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  
+  <!-- Initial loading screen -->
+  <div id="initial-loading">
+    <div class="logo">
+      <svg width="32" height="32" fill="white" viewBox="0 0 24 24">
+        <path d="M9.5 2A1.5 1.5 0 0 0 8 3.5v1A1.5 1.5 0 0 0 9.5 6h5A1.5 1.5 0 0 0 16 4.5v-1A1.5 1.5 0 0 0 14.5 2h-5z"/>
+        <path d="M6.5 6A1.5 1.5 0 0 0 5 7.5V18a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V7.5A1.5 1.5 0 0 0 17.5 6h-11z"/>
+        <path d="M8.5 10.5A.5.5 0 0 1 9 10h6a.5.5 0 0 1 0 1H9a.5.5 0 0 1-.5-.5z"/>
+        <path d="M8.5 13.5A.5.5 0 0 1 9 13h6a.5.5 0 0 1 0 1H9a.5.5 0 0 1-.5-.5z"/>
+        <path d="M8.5 16.5A.5.5 0 0 1 9 16h3a.5.5 0 0 1 0 1H9a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+    </div>
+    <h1 class="title">AutoML Studio</h1>
+    <p class="subtitle">Loading your automated ML platform...</p>
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- React app container -->
+  <div id="root"></div>
+  
+  <script>
+    // Hide loading screen when React mounts
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        document.body.classList.add('app-loaded');
+      }, 100);
+    });
+    
+    // Error handling
+    window.addEventListener('error', function(e) {
+      console.error('Application error:', e.error);
+    });
+    
+    // Service worker registration (for future PWA support)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('SW registered: ', registration);
+          })
+          .catch(function(registrationError) {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+    
+    // Theme detection and application
+    function applyTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    
+    // Apply theme immediately
+    applyTheme();
+    
+    // Listen for theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  </script>
+</body>
+</html>
