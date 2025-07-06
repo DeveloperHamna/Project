@@ -16,10 +16,6 @@ author = "agent"
 task = "workflow.run"
 args = "AutoML Backend Server"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "AutoML Frontend"
-
 [[workflows.workflow]]
 name = "AutoML Backend Server"
 author = "agent"
@@ -28,16 +24,6 @@ author = "agent"
 task = "shell.exec"
 args = "pip install fastapi uvicorn pandas numpy scikit-learn xgboost matplotlib seaborn plotly jinja2 weasyprint python-magic pydantic pydantic-settings python-multipart joblib && python main.py"
 waitForPort = 5000
-
-[[workflows.workflow]]
-name = "AutoML Frontend"
-author = "agent"
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd frontend && npm install && npm start"
-waitForPort = 3000
 
 [[ports]]
 localPort = 5000
