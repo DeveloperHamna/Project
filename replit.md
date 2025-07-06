@@ -110,6 +110,15 @@ static/           # Static web assets
 
 ## Recent Changes
 
+### July 06, 2025 - App Rebranding to Credit Scoring Model
+
+#### Application Name Update
+- Changed application name from "AutoML Studio" to "Credit Scoring Model"
+- Updated main frontend title and branding in static/automl-app.html
+- Updated backend service name in configuration and FastAPI app
+- Modified backend description to focus on credit scoring model use case
+- All functionality remains the same, only branding updated
+
 ### July 06, 2025 - Complete AutoML Platform with Modern Frontend
 
 #### Frontend Implementation

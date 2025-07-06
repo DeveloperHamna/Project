@@ -31,8 +31,8 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="AutoML Backend Service",
-    description="A comprehensive AutoML backend service for automatic model training and evaluation",
+    title="Credit Scoring Model Backend Service",
+    description="A comprehensive AutoML backend service for credit scoring model training and evaluation",
     version="1.0.0",
     lifespan=lifespan
 )

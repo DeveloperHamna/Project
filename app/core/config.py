@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     
     # API Configuration
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "AutoML Backend Service"
+    PROJECT_NAME: str = "Credit Scoring Model Backend Service"
     
     # File Upload Configuration
     MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100MB
