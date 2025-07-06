@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Credit Scoring Model Backend Service"
     
     # File Upload Configuration
-    MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100MB
+    MAX_UPLOAD_SIZE: int = 500 * 1024 * 1024  # 500MB
     ALLOWED_EXTENSIONS: set = {".csv", ".xlsx", ".xls"}
     UPLOAD_DIR: str = "uploads"
     

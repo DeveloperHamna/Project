@@ -117,7 +117,9 @@ static/           # Static web assets
 - Updated main frontend title and branding in static/automl-app.html
 - Updated backend service name in configuration and FastAPI app
 - Modified backend description to focus on credit scoring model use case
-- All functionality remains the same, only branding updated
+- Changed subtitle from "Automated Machine Learning Platform" to "Created by Hamna"
+- Increased maximum upload file size from 100MB to 500MB
+- All functionality remains the same, only branding and limits updated
 
 ### July 06, 2025 - Complete AutoML Platform with Modern Frontend
 
