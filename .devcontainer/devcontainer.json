@@ -1,0 +1,58 @@
+{
+    "name": "Credit Scoring Model - AutoML Platform",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        },
+        "ghcr.io/devcontainers/features/git:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-python.pylint",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-typescript-next",
+                "ms-vscode-remote.remote-containers",
+                "GitHub.copilot",
+                "ms-toolsai.jupyter"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.formatting.provider": "black",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                },
+                "files.associations": {
+                    "*.html": "html"
+                }
+            }
+        }
+    },
+    "forwardPorts": [5000, 3000],
+    "portsAttributes": {
+        "5000": {
+            "label": "Backend API",
+            "onAutoForward": "notify"
+        },
+        "3000": {
+            "label": "Frontend Dev Server",
+            "onAutoForward": "notify"
+        }
+    },
+    "postCreateCommand": "pip install --upgrade pip && pip install -r requirements-dev.txt && cd frontend && npm install",
+    "remoteUser": "vscode",
+    "mounts": [
+        "source=${localWorkspaceFolder}/uploads,target=${containerWorkspaceFolder}/uploads,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/models,target=${containerWorkspaceFolder}/models,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/reports,target=${containerWorkspaceFolder}/reports,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/visualizations,target=${containerWorkspaceFolder}/visualizations,type=bind,consistency=cached"
+    ]
+}

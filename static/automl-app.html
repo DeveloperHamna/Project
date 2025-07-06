@@ -480,14 +480,21 @@
             try {
                 const response = await fetch('/api/v1/upload', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: AbortSignal.timeout(300000) // 5 minute timeout
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Upload failed: ${response.statusText}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `Upload failed: ${response.statusText}`);
                 }
 
                 const result = await response.json();
+                
+                if (!result.session_id) {
+                    throw new Error('Invalid response: No session ID received');
+                }
+                
                 currentSessionId = result.session_id;
                 
                 hideUploadProgress();
@@ -496,11 +503,22 @@
                 updateStepper(2);
                 showSessionInfo(result);
                 
+                // Add Next button after successful upload
+                addNextButton();
+                
                 showToast('Dataset uploaded successfully!', 'success');
                 
             } catch (error) {
                 hideUploadProgress();
-                showToast(`Upload failed: ${error.message}`, 'error');
+                console.error('Upload error:', error);
+                
+                if (error.name === 'TimeoutError') {
+                    showToast('Upload timeout. Please try with a smaller file or check your connection.', 'error');
+                } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                    showToast('Network error. Please check your connection and try again.', 'error');
+                } else {
+                    showToast(`Upload failed: ${error.message}`, 'error');
+                }
             }
         }
 
@@ -517,8 +535,8 @@
                 return false;
             }
             
-            if (file.size > 100 * 1024 * 1024) { // 100MB
-                showToast('File size must be less than 100MB', 'error');
+            if (file.size > 500 * 1024 * 1024) { // 500MB
+                showToast('File size must be less than 500MB', 'error');
                 return false;
             }
             
@@ -928,6 +946,78 @@
             updateStepper(1);
             
             showToast('Session reset. You can start with a new dataset.', 'success');
+        }
+
+        // Add Next button after successful upload
+        function addNextButton() {
+            const uploadStep = document.getElementById('step-upload');
+            let nextBtn = uploadStep.querySelector('.next-button');
+            
+            if (!nextBtn) {
+                nextBtn = document.createElement('button');
+                nextBtn.className = 'next-button bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors mt-4';
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right mr-2"></i>Next: Data Analysis';
+                nextBtn.onclick = () => navigateToStep(2);
+                uploadStep.appendChild(nextBtn);
+            }
+        }
+
+        // Navigate to specific step
+        function navigateToStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('[id^="step-"]').forEach(step => {
+                step.classList.add('hidden');
+            });
+            
+            // Show target step
+            switch(stepNumber) {
+                case 1:
+                    document.getElementById('step-upload').classList.remove('hidden');
+                    updateStepper(1);
+                    break;
+                case 2:
+                    document.getElementById('step-preview').classList.remove('hidden');
+                    updateStepper(2);
+                    addTrainingButton();
+                    break;
+                case 3:
+                    document.getElementById('step-training').classList.remove('hidden');
+                    updateStepper(3);
+                    break;
+                case 4:
+                    document.getElementById('step-results').classList.remove('hidden');
+                    updateStepper(4);
+                    addReportsButton();
+                    break;
+            }
+        }
+
+        // Add training button to data analysis step
+        function addTrainingButton() {
+            const previewStep = document.getElementById('step-preview');
+            const existingBtn = previewStep.querySelector('#start-training-btn');
+            
+            if (existingBtn) {
+                existingBtn.classList.remove('hidden');
+                existingBtn.onclick = () => {
+                    startTraining();
+                    navigateToStep(3);
+                };
+            }
+        }
+
+        // Add reports button to results step
+        function addReportsButton() {
+            const resultsStep = document.getElementById('step-results');
+            let reportsBtn = resultsStep.querySelector('.reports-button');
+            
+            if (!reportsBtn) {
+                reportsBtn = document.createElement('button');
+                reportsBtn.className = 'reports-button bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded-lg transition-colors mt-4';
+                reportsBtn.innerHTML = '<i class="fas fa-file-alt mr-2"></i>Generate Report';
+                reportsBtn.onclick = () => generateReport('pdf');
+                resultsStep.appendChild(reportsBtn);
+            }
         }
 
         // Check health status

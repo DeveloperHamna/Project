@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["cairo", "ffmpeg-full", "file", "fontconfig", "freetype", "ghostscript", "glib", "glibcLocales", "gobject-introspection", "gtk3", "harfbuzz", "libxcrypt", "pango", "pkg-config", "qhull", "tcl", "tk"]
 
 [workflows]
-runButton = "Project"
+runButton = "AutoML Frontend"
 
 [[workflows.workflow]]
 name = "Project"
@@ -32,6 +32,7 @@ waitForPort = 5000
 [[workflows.workflow]]
 name = "AutoML Frontend"
 author = "agent"
+mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

@@ -2,24 +2,32 @@
 
 ## Overview
 
-This is a production-ready FastAPI-based AutoML backend service that provides comprehensive machine learning capabilities for tabular data. The application automatically handles the entire ML pipeline from data ingestion to model deployment, offering a REST API interface for frontend integration.
+This is a production-ready FastAPI-based AutoML backend service that provides comprehensive machine learning capabilities for tabular data. The application automatically handles the entire ML pipeline from data upload to model training, evaluation, and report generation.
 
 ## System Architecture
 
 ### Backend Framework
 - **FastAPI**: Modern, fast web framework for building APIs with automatic OpenAPI documentation
-- **Python 3.8+**: Core runtime environment
-- **Uvicorn**: ASGI server for production deployment
+- **Python 3.11**: Core runtime environment with type hints and async support
+- **Uvicorn**: ASGI server for production deployment with hot reload capabilities
+
+### Frontend Framework
+- **React 18**: Modern frontend framework with TypeScript support
+- **Tailwind CSS**: Utility-first CSS framework for responsive design
+- **Framer Motion**: Animation library for smooth UI transitions
+- **React Query**: Data fetching and caching library for API integration
 
 ### ML Stack
 - **Scikit-learn**: Primary ML library for preprocessing, training, and evaluation
 - **XGBoost**: Gradient boosting framework for advanced model training
 - **Pandas/NumPy**: Data manipulation and numerical computing
 - **Matplotlib/Seaborn**: Data visualization and plotting
+- **Plotly**: Interactive visualizations for web interface
 
 ### File Processing
 - **Python-magic**: File type detection and validation
-- **Multiple format support**: CSV, Excel (.xlsx, .xls) file handling
+- **Openpyxl**: Excel file support (.xlsx, .xls)
+- **Python-multipart**: File upload handling
 
 ### Report Generation
 - **Jinja2**: Template engine for HTML report generation
@@ -28,166 +36,85 @@ This is a production-ready FastAPI-based AutoML backend service that provides co
 ## Key Components
 
 ### API Routes Structure
-1. **Upload Route** (`/upload`): File upload and dataset preview
-2. **Training Route** (`/train`): Model training orchestration
-3. **Evaluation Route** (`/evaluation`): Model performance metrics
-4. **Reports Route** (`/reports`): Report generation and export
+1. **Upload Route** (`/upload`): File upload, validation, and dataset preview
+2. **Training Route** (`/train`): Model training orchestration with background tasks
+3. **Evaluation Route** (`/evaluation`): Model performance metrics and comparison
+4. **Reports Route** (`/reports`): Report generation and export functionality
 
 ### Services Layer
-1. **DataService**: Dataset loading, preprocessing, and validation
-2. **MLService**: Model training, evaluation, and comparison
-3. **VisualizationService**: Chart and plot generation
-4. **ReportService**: Comprehensive report generation
+1. **DataService**: Dataset loading, preprocessing, validation, and task detection
+2. **MLService**: Model training, evaluation, hyperparameter tuning, and comparison
+3. **VisualizationService**: Chart generation, feature importance, confusion matrices
+4. **ReportService**: Comprehensive report generation with multiple formats
+
+### Frontend Components
+1. **UploadZone**: Drag-and-drop file upload with progress tracking
+2. **DataPreviewTable**: Dataset preview with pagination and sorting
+3. **TrainingProgress**: Real-time training progress with status updates
+4. **EvaluationDashboard**: Model comparison and metrics visualization
+5. **ReportsPanel**: Report generation and download interface
 
 ### Core Components
 1. **Configuration Management**: Centralized settings using Pydantic
-2. **Exception Handling**: Custom exception classes for better error management
+2. **Exception Handling**: Custom exception classes with proper error responses
 3. **Schema Validation**: Pydantic models for request/response validation
-4. **Utility Functions**: File handling and ML utility functions
+4. **Theme Management**: Dark/light mode support with system preference detection
 
 ## Data Flow
 
-1. **File Upload**: Client uploads CSV/Excel → Validation → Session creation
-2. **Data Preview**: File parsing → Column analysis → Target detection
-3. **Task Detection**: Automatic classification/regression determination
-4. **Data Preprocessing**: Missing value handling → Feature encoding → Scaling
-5. **Model Training**: Multiple algorithms → Hyperparameter tuning → Cross-validation
-6. **Model Evaluation**: Performance metrics → Visualization generation
-7. **Report Generation**: Comprehensive results → Export formats (PDF/HTML/JSON)
+1. **File Upload**: Client uploads CSV/Excel → Validation → Session creation → Dataset preview
+2. **Task Detection**: Automatic classification/regression detection → Feature analysis → Preprocessing recommendations
+3. **Training**: Background training process → Multiple model comparison → Best model selection
+4. **Evaluation**: Performance metrics calculation → Visualization generation → Model comparison
+5. **Reports**: Comprehensive report generation → Multiple format support → Download functionality
 
 ## External Dependencies
 
-### Core ML Libraries
-- scikit-learn: Machine learning algorithms and utilities
-- xgboost: Gradient boosting framework
-- pandas: Data manipulation
-- numpy: Numerical computing
+### Python Backend Dependencies
+- **FastAPI**: Web framework with automatic API documentation
+- **Uvicorn**: ASGI server for production deployment
+- **Scikit-learn**: Machine learning algorithms and preprocessing
+- **XGBoost**: Advanced gradient boosting models
+- **Pandas**: Data manipulation and analysis
+- **Matplotlib/Seaborn**: Statistical data visualization
+- **Jinja2**: Template engine for report generation
+- **WeasyPrint**: PDF generation from HTML
+- **Python-magic**: File type detection
+- **Joblib**: Model serialization and parallel processing
 
-### Visualization
-- matplotlib: Static plotting
-- seaborn: Statistical data visualization
-
-### File Processing
-- python-magic: File type detection
-- openpyxl: Excel file handling
-
-### Report Generation
-- jinja2: Template rendering
-- weasyprint: PDF generation
-
-### Web Framework
-- fastapi: API framework
-- uvicorn: ASGI server
-- pydantic: Data validation
+### Frontend Dependencies
+- **React**: User interface library with hooks and context
+- **TypeScript**: Type-safe JavaScript development
+- **Tailwind CSS**: Utility-first CSS framework
+- **Framer Motion**: Animation and gesture library
+- **React Query**: Data fetching and state management
+- **React Router**: Client-side routing
+- **Axios**: HTTP client for API communication
+- **Chart.js**: Data visualization library
+- **React Dropzone**: File upload interface
 
 ## Deployment Strategy
 
 ### Development Environment
-- Direct Python execution with uvicorn
-- Hot-reload enabled for development
-- Local file storage for uploads and models
+- **Dev Container**: Configured with Python 3.11, Node.js 20, and required extensions
+- **Hot Reload**: Both backend (Uvicorn) and frontend (React) support hot reload
+- **Port Configuration**: Backend on port 5000, frontend on port 3000
 
 ### Production Considerations
-- **Scalability**: Session-based architecture supports multiple concurrent users
-- **Storage**: File system-based storage (can be migrated to cloud storage)
-- **Caching**: In-memory session storage (recommended: Redis for production)
-- **Security**: CORS configuration and file validation
-- **Monitoring**: Structured logging throughout the application
+- **File Storage**: Local filesystem with configurable directories
+- **Session Management**: In-memory storage (recommend Redis for production)
+- **Error Handling**: Comprehensive exception handling with proper HTTP status codes
+- **CORS**: Configured for cross-origin requests
+- **Static Files**: Served through FastAPI static file mounting
 
-### Directory Structure
-```
-uploads/          # Uploaded dataset files
-models/           # Trained model artifacts
-visualizations/   # Generated charts and plots
-reports/          # Generated reports
-static/           # Static web assets
-```
-
-### Configuration Management
-- Environment-based configuration using Pydantic Settings
-- Configurable limits for file uploads and processing
-- Adjustable ML parameters (CV folds, test size, etc.)
-
-## Recent Changes
-
-### July 06, 2025 - App Rebranding to Credit Scoring Model
-
-#### Application Name Update
-- Changed application name from "AutoML Studio" to "Credit Scoring Model"
-- Updated main frontend title and branding in static/automl-app.html
-- Updated backend service name in configuration and FastAPI app
-- Modified backend description to focus on credit scoring model use case
-- Changed subtitle from "Automated Machine Learning Platform" to "Created by Hamna"
-- Increased maximum upload file size from 100MB to 500MB
-- All functionality remains the same, only branding and limits updated
-
-### July 06, 2025 - Complete AutoML Platform with Modern Frontend
-
-#### Frontend Implementation
-- Built comprehensive modern frontend interface with Tailwind CSS
-- Implemented dark theme by default with light mode toggle
-- Created responsive design supporting mobile, tablet, and desktop
-- Added smooth animations and transitions throughout the interface
-- Integrated real-time progress tracking and status updates
-
-#### Key Frontend Features
-- **Interactive Upload Zone**: Drag-and-drop file upload with progress tracking
-- **Smart Progress Stepper**: Visual 4-step workflow (Upload → Analysis → Training → Results)
-- **Live Data Preview**: Interactive table with sorting, pagination, and data quality indicators
-- **Real-time Training Progress**: Animated progress bars with model-by-model status
-- **Comprehensive Results Dashboard**: Model comparison, metrics visualization, and performance insights
-- **Report Generation**: PDF/HTML/JSON report generation with download capabilities
-- **Theme Management**: Dark/light mode with system preference detection
-- **Toast Notifications**: User-friendly success/error messaging
-- **Session Management**: Multi-session support with session info sidebar
-
-#### Technical Architecture
-- **Single-page Application**: Built as modern HTML5 app with vanilla JavaScript
-- **API Integration**: Direct integration with FastAPI backend via fetch API
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Real-time Updates**: Polling-based training progress monitoring
-- **Error Handling**: Comprehensive error handling with user-friendly messages
-- **Accessibility**: Keyboard navigation and screen reader support
-
-#### Backend Enhancements
-- Updated main route to serve modern frontend (`/automl-app.html`)
-- Maintained backward compatibility with documentation interface (`/docs-old`)
-- All existing API endpoints remain functional
-- Enhanced CORS support for frontend integration
-
-#### File Structure
-```
-static/
-├── automl-app.html       # Modern AutoML frontend interface
-└── index.html           # Legacy documentation interface
-
-frontend/                 # React components (development version)
-├── src/
-│   ├── components/      # Reusable UI components
-│   ├── services/        # API service layer
-│   ├── hooks/          # Custom React hooks
-│   ├── contexts/       # React context providers
-│   └── types/          # TypeScript type definitions
-└── public/             # Static assets
-```
-
-#### User Experience Improvements
-- **Zero Configuration**: No setup required - upload dataset and start training
-- **Visual Feedback**: Real-time progress indicators and status updates
-- **Intuitive Navigation**: Clear step-by-step workflow progression
-- **Professional UI**: Clean, modern interface suitable for business use
-- **Mobile Ready**: Fully responsive design for all device sizes
-
-#### Performance Features
-- **Efficient Polling**: Smart training progress monitoring
-- **Optimized Loading**: Fast initial load with progressive enhancement
-- **Memory Management**: Proper cleanup of intervals and event listeners
-- **Caching Strategy**: Local storage for theme preferences and session data
+### Scalability Options
+- **Database Integration**: Prepared for PostgreSQL/MongoDB integration
+- **Cache Layer**: Ready for Redis integration for session management
+- **Background Tasks**: Uses FastAPI background tasks (consider Celery for production)
+- **File Processing**: Configurable upload limits and file validation
 
 ## Changelog
-
-- July 06, 2025. Complete AutoML platform with modern frontend interface
-- July 06, 2025. Initial backend setup with full ML pipeline
+- July 06, 2025. Initial setup
 
 ## User Preferences
 
