@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoML Backend Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+        }
+        .feature-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .api-endpoint {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .workflow-step {
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+        .workflow-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-robot"></i> AutoML Backend</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#features">Features</a>
+                <a class="nav-link" href="#api">API Documentation</a>
+                <a class="nav-link" href="#workflow">Workflow</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">AutoML Backend Service</h1>
+                    <p class="lead mb-4">
+                        A comprehensive FastAPI-based backend service for automated machine learning. 
+                        Upload your dataset, and let our service handle the rest - from data preprocessing 
+                        to model training and evaluation.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#api" class="btn btn-light btn-lg">
+                            <i class="fas fa-book"></i> API Documentation
+                        </a>
+                        <a href="/health" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-heartbeat"></i> Health Check
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card bg-white bg-opacity-10 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-white">Service Status</h5>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="status-badge status-online me-2">
+                                    <i class="fas fa-circle"></i> Online
+                                </span>
+                                <span class="text-white-50">Backend Service Running</span>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="text-white">
+                                        <i class="fas fa-upload fa-2x mb-2"></i>
+                                        <div>Upload</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-white">
+                                        <i class="fas fa-cogs fa-2x mb-2"></i>
+                                        <div>Process</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-white">
+                                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                        <div>Analyze</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold">Key Features</h2>
+                    <p class="lead">Everything you need for automated machine learning</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-upload fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Data Upload & Validation</h5>
+                            <p class="card-text">
+                                Upload CSV and Excel files with automatic validation and preview. 
+                                Supports various formats and encodings.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Task Detection</h5>
+                            <p class="card-text">
+                                Automatically detects whether your problem is classification or regression 
+                                with confidence scoring.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tools fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Data Preprocessing</h5>
+                            <p class="card-text">
+                                Intelligent handling of missing values, categorical encoding, 
+                                and feature scaling with full transparency.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-robot fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Model Training</h5>
+                            <p class="card-text">
+                                Trains multiple models including Random Forest, XGBoost, and Linear models 
+                                with hyperparameter tuning.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-bar fa-3x text-danger mb-3"></i>
+                            <h5 class="card-title">Model Evaluation</h5>
+                            <p class="card-text">
+                                Comprehensive evaluation metrics, confusion matrices, ROC curves, 
+                                and feature importance analysis.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-pdf fa-3x text-secondary mb-3"></i>
+                            <h5 class="card-title">Report Generation</h5>
+                            <p class="card-text">
+                                Generate comprehensive reports in PDF, HTML, or JSON format 
+                                with visualizations and insights.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation Section -->
+    <section id="api" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold">API Documentation</h2>
+                    <p class="lead">RESTful API endpoints for AutoML operations</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-primary">POST</span> /api/v1/upload</h6>
+                        <p class="mb-1">Upload dataset and get preview</p>
+                        <small class="text-muted">Accepts CSV and Excel files</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-success">GET</span> /api/v1/dataset/{session_id}/preview</h6>
+                        <p class="mb-1">Get dataset preview and statistics</p>
+                        <small class="text-muted">Returns sample data and column info</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-info">POST</span> /api/v1/dataset/{session_id}/detect-task</h6>
+                        <p class="mb-1">Detect task type (classification/regression)</p>
+                        <small class="text-muted">Automatic task detection with confidence</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-warning">POST</span> /api/v1/train/{session_id}</h6>
+                        <p class="mb-1">Start model training process</p>
+                        <small class="text-muted">Trains multiple models with hyperparameter tuning</small>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-success">GET</span> /api/v1/training/{job_id}/status</h6>
+                        <p class="mb-1">Get training job status and progress</p>
+                        <small class="text-muted">Real-time training progress tracking</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-success">GET</span> /api/v1/evaluation/{session_id}</h6>
+                        <p class="mb-1">Get model evaluation results</p>
+                        <small class="text-muted">Comprehensive performance metrics</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-success">GET</span> /api/v1/evaluation/{session_id}/visualizations</h6>
+                        <p class="mb-1">Generate visualization URLs</p>
+                        <small class="text-muted">Charts, plots, and model insights</small>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <h6><span class="badge bg-primary">POST</span> /api/v1/reports/{session_id}/generate</h6>
+                        <p class="mb-1">Generate comprehensive report</p>
+                        <small class="text-muted">PDF, HTML, or JSON format</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Example Request</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="code-block">
+                                <pre><code>curl -X POST "http://localhost:8000/api/v1/upload" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@your_dataset.csv" \
+  -F "target_column=target"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold">AutoML Workflow</h2>
+                    <p class="lead">Simple steps to get your ML models up and running</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="workflow-step">
+                        <div class="d-flex align-items-center">
+                            <div class="workflow-number">1</div>
+                            <div>
+                                <h5>Upload Dataset</h5>
+                                <p class="mb-0">Upload your CSV or Excel file. The service will validate the format and provide a preview of your data.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="d-flex align-items-center">
+                            <div class="workflow-number">2</div>
+                            <div>
+                                <h5>Task Detection</h5>
+                                <p class="mb-0">The system automatically detects whether your problem is classification or regression based on your target variable.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="d-flex align-items-center">
+                            <div class="workflow-number">3</div>
+                            <div>
+                                <h5>Data Preprocessing</h5>
+                                <p class="mb-0">Automated preprocessing including missing value handling, categorical encoding, and feature scaling.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="d-flex align-items-center">
+                            <div class="workflow-number">4</div>
+                            <div>
+                                <h5>Model Training</h5>
+                                <p class="mb-0">Multiple models are trained with hyperparameter tuning to find the best performing model for your data.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="d-flex align-items-center">
+                            <div class="workflow-number">5</div>
+                            <div>
+                                <h5>Evaluation & Reports</h5>
+                                <p class="mb-0">Get detailed evaluation metrics, visualizations, and comprehensive reports. Export models for deployment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>AutoML Backend Service</h5>
+                    <p>A comprehensive FastAPI-based backend for automated machine learning operations.</p>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <h6>Quick Links</h6>
+                    <div class="d-flex gap-3 justify-content-lg-end">
+                        <a href="/docs" class="text-white text-decoration-none">
+                            <i class="fas fa-book"></i> Swagger Docs
+                        </a>
+                        <a href="/health" class="text-white text-decoration-none">
+                            <i class="fas fa-heartbeat"></i> Health Check
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <small>&copy; 2024 AutoML Backend Service. Built with FastAPI and scikit-learn.</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check service health on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/health')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Service health:', data);
+                })
+                .catch(error => {
+                    console.error('Health check failed:', error);
+                });
+        });
+    </script>
+</body>
+</html>
