@@ -2,7 +2,7 @@ modules = ["python-3.11", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["cairo", "ffmpeg-full", "file", "fontconfig", "freetype", "ghostscript", "glib", "glibcLocales", "gobject-introspection", "gtk3", "harfbuzz", "libxcrypt", "pango", "pkg-config", "qhull", "tcl", "tk"]
+packages = ["cairo", "ffmpeg-full", "file", "fontconfig", "freetype", "ghostscript", "glib", "glibcLocales", "gobject-introspection", "gtk3", "harfbuzz", "libxcrypt", "pango", "pkg-config", "qhull", "tcl", "tk", "xsimd"]
 
 [workflows]
 runButton = "AutoML Frontend"

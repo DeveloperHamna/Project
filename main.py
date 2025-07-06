@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 
-from app.api.routes import upload, training, evaluation, reports
+from app.api.routes import upload, training, evaluation, reports, data_analysis
 from app.core.config import settings
 from app.core.exceptions import setup_exception_handlers
 
@@ -56,6 +56,7 @@ setup_exception_handlers(app)
 
 # Include routers
 app.include_router(upload.router, prefix="/api/v1", tags=["upload"])
+app.include_router(data_analysis.router, prefix="/api/v1/data-analysis", tags=["data-analysis"])
 app.include_router(training.router, prefix="/api/v1", tags=["training"])
 app.include_router(evaluation.router, prefix="/api/v1", tags=["evaluation"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
@@ -63,8 +64,8 @@ app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 
 @app.get("/")
 async def root():
-    """Root endpoint serving the modern AutoML frontend"""
-    return FileResponse("static/automl-app.html")
+    """Root endpoint serving the enhanced AutoML frontend"""
+    return FileResponse("static/enhanced-automl-app.html")
 
 @app.get("/docs-old")
 async def docs_old():

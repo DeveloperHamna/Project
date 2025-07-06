@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     
     # File Upload Configuration
     MAX_UPLOAD_SIZE: int = 500 * 1024 * 1024  # 500MB
-    ALLOWED_EXTENSIONS: set = {".csv", ".xlsx", ".xls"}
+    ALLOWED_EXTENSIONS: set = {".csv", ".xlsx", ".xls", ".json", ".tsv", ".zip"}
     UPLOAD_DIR: str = "uploads"
     
     # Model Configuration
@@ -28,6 +28,34 @@ class Settings(BaseSettings):
     DEFAULT_TEST_SIZE: float = 0.2
     DEFAULT_RANDOM_STATE: int = 42
     MAX_FEATURES_FOR_SHAP: int = 20
+    
+    # Preprocessing Configuration
+    AUTO_DETECT_ENCODING: bool = True
+    AUTO_DETECT_DELIMITER: bool = True
+    MISSING_VALUE_THRESHOLD: float = 0.5  # Drop columns with >50% missing values
+    LOW_VARIANCE_THRESHOLD: float = 0.01  # Drop features with variance < 0.01
+    CORRELATION_THRESHOLD: float = 0.95  # Drop highly correlated features
+    OUTLIER_DETECTION_METHOD: str = "IQR"  # IQR or Z-Score
+    OUTLIER_THRESHOLD: float = 3.0  # Standard deviations for outlier detection
+    
+    # Imbalanced Data Configuration
+    IMBALANCE_THRESHOLD: float = 0.1  # Minimum class proportion to consider balanced
+    DEFAULT_SAMPLING_STRATEGY: str = "auto"  # auto, minority, majority, all
+    SMOTE_K_NEIGHBORS: int = 5
+    
+    # Feature Engineering Configuration
+    AUTO_FEATURE_ENGINEERING: bool = True
+    CREATE_POLYNOMIAL_FEATURES: bool = False
+    POLYNOMIAL_DEGREE: int = 2
+    CREATE_INTERACTION_FEATURES: bool = True
+    
+    # Scaling Configuration
+    DEFAULT_SCALER: str = "StandardScaler"  # StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler
+    
+    # Dataset Split Configuration
+    TRAIN_SIZE: float = 0.7
+    VAL_SIZE: float = 0.15
+    TEST_SIZE: float = 0.15
     
     # Performance Configuration
     N_JOBS: int = -1  # Use all available cores

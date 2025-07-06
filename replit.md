@@ -114,7 +114,71 @@ This is a production-ready FastAPI-based AutoML backend service that provides co
 - **File Processing**: Configurable upload limits and file validation
 
 ## Changelog
-- July 06, 2025. Initial setup
+- July 06, 2025: Initial setup
+- July 06, 2025: Comprehensive dataset handling and preprocessing pipeline implementation
+
+## Recent Changes
+
+### July 06, 2025 - Comprehensive Dataset Handling Implementation
+
+#### Extended File Format Support
+- Added support for multiple dataset types: CSV, Excel (.xlsx, .xls), JSON, TSV, and ZIP files
+- Increased upload limit to 500MB with robust error handling
+- Auto-detection of file encoding, delimiters, and headers
+- Comprehensive file validation and type checking
+
+#### Advanced Data Analysis & Inspection
+- Implemented comprehensive data inspection with automated quality assessment
+- Added data quality scoring with issue detection and recommendations
+- Auto-run data inspection functions including df.head(), df.tail(), df.info(), df.describe()
+- Statistical analysis for numeric and categorical columns
+- Outlier detection using IQR and Z-score methods
+- Missing value analysis with percentage calculations
+- Duplicate detection and reporting
+
+#### Interactive Visualization Dashboard
+- Created comprehensive visualization suite with toggle controls
+- Auto-generated charts: histograms, box plots, violin plots, scatter plots, pair plots
+- Correlation matrices with heatmaps for numeric data
+- Count plots and bar charts for categorical data
+- QQ plots for normality testing
+- Missing values heatmaps
+- Target distribution and relationship analysis
+- Real-time chart generation with matplotlib and seaborn
+
+#### Preprocessing Pipeline
+- Comprehensive data cleaning with configurable options
+- Missing value handling (drop columns, imputation strategies)
+- Duplicate removal with progress tracking
+- Data type fixing and validation
+- Outlier treatment using IQR and statistical methods
+- Basic feature engineering capabilities
+- Data validation and schema consistency checks
+
+#### Enhanced User Interface
+- Modern sidebar navigation with clickable step progression
+- Dark/light theme support with system preference detection
+- Real-time progress tracking and status indicators
+- Interactive visualization controls with toggle buttons
+- Responsive design for mobile, tablet, and desktop
+- Professional UI suitable for business presentations
+- Session management with unique identifiers
+
+#### API Enhancements
+- New comprehensive data analysis endpoints (/api/v1/data-analysis/*)
+- Data inspection API with detailed column analysis
+- Visualization generation API with selective chart types
+- Preprocessing API with configurable options
+- File serving endpoints for generated charts
+- Enhanced error handling with meaningful messages
+
+#### Technical Improvements
+- Modular service architecture with comprehensive preprocessing service
+- Advanced visualization service with multiple chart types
+- Session-based data management for concurrent users
+- Robust error handling and logging throughout pipeline
+- Type-safe API endpoints with Pydantic validation
+- Memory-efficient data processing for large datasets
 
 ## User Preferences
 
