@@ -24,13 +24,31 @@
             background: transparent;
         }
         .sidebar-blur {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.85);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px) saturate(1.2);
+            background: rgba(255, 255, 255, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dark .sidebar-blur {
-            background: rgba(30, 30, 30, 0.85);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px) saturate(1.2);
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Enhanced text readability on blurred background */
+        .sidebar-blur h3 {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .dark .sidebar-blur h3 {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .sidebar-blur p {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .dark .sidebar-blur p {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         
         /* Enhanced Analysis Section Styles */
@@ -365,50 +383,50 @@
                     <nav class="space-y-4">
                         <div class="space-y-3">
                             <!-- Step 1: Upload Dataset -->
-                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(1)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 1}">
+                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                                 @click="setCurrentStep(1)" :class="{'bg-white/50 dark:bg-white/15 shadow-sm': currentStep === 1}">
                                 <div class="step-icon" :class="getStepClass(1)">
                                     <span>1</span>
                                 </div>
                                 <div>
-                                    <h3 class="font-medium">📁 Upload Dataset</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Upload your CSV, Excel, JSON, TSV, or ZIP file</p>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">📁 Upload Dataset</h3>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300">Upload your CSV, Excel, JSON, TSV, or ZIP file</p>
                                 </div>
                             </div>
 
                             <!-- Step 2: Data Analysis -->
-                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(2)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 2}">
+                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                                 @click="setCurrentStep(2)" :class="{'bg-white/50 dark:bg-white/15 shadow-sm': currentStep === 2}">
                                 <div class="step-icon" :class="getStepClass(2)">
                                     <span>2</span>
                                 </div>
                                 <div>
-                                    <h3 class="font-medium">📊 Data Analysis</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Explore data and generate visualizations</p>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">📊 Data Analysis</h3>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300">Explore data and generate visualizations</p>
                                 </div>
                             </div>
 
                             <!-- Step 3: Model Training -->
-                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(3)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 3}">
+                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                                 @click="setCurrentStep(3)" :class="{'bg-white/50 dark:bg-white/15 shadow-sm': currentStep === 3}">
                                 <div class="step-icon" :class="getStepClass(3)">
                                     <span>3</span>
                                 </div>
                                 <div>
-                                    <h3 class="font-medium">🧠 Model Training</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Train and compare ML models</p>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">🧠 Model Training</h3>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300">Train and compare ML models</p>
                                 </div>
                             </div>
 
                             <!-- Step 4: Results & Reports -->
-                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                                 @click="setCurrentStep(4)" :class="{'bg-blue-50 dark:bg-blue-900/20': currentStep === 4}">
+                            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                                 @click="setCurrentStep(4)" :class="{'bg-white/50 dark:bg-white/15 shadow-sm': currentStep === 4}">
                                 <div class="step-icon" :class="getStepClass(4)">
                                     <span>4</span>
                                 </div>
                                 <div>
-                                    <h3 class="font-medium">📈 Results & Reports</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">View metrics and download reports</p>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">📈 Results & Reports</h3>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300">View metrics and download reports</p>
                                 </div>
                             </div>
                         </div>
@@ -416,14 +434,14 @@
                 </div>
 
                 <!-- Progress Summary -->
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                <div class="p-4 border-t border-white/20 dark:border-white/10 backdrop-blur-sm">
+                    <div class="text-sm text-gray-800 dark:text-gray-200">
                         <div class="flex justify-between mb-2">
-                            <span>Progress</span>
-                            <span x-text="Math.round((completedSteps / 4) * 100) + '%'"></span>
+                            <span class="font-medium">Progress</span>
+                            <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="Math.round((completedSteps / 4) * 100) + '%'"></span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        <div class="w-full bg-white/30 dark:bg-black/30 rounded-full h-2 overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out shadow-sm" 
                                  :style="'width: ' + (completedSteps / 4) * 100 + '%'"></div>
                         </div>
                     </div>
